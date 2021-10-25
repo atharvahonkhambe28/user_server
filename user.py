@@ -56,37 +56,67 @@ def login():
         else:
             return "User exist"  
 
+@app.route("/items_picked", methods =['POST'])
+def items_picked():
+    if request.method == 'POST':
+        userDetails = request.form
+        datas = request.get_json()
+        csvfilename=datas[0]["PickListNo"] + "done" + ".csv"
+    
+        for data in datas[0]["items"] :
+            data["ItemNo"] = data.pop("number")
+            data["ItemDescription"] = data.pop("description")
+            data["Quantity"] = data.pop("quantity")
+            data["Location"] = data.pop("location")
+            data["KitNo"] = datas[0]["KitNo"]
+            data["PickListNo"] = datas[0]["PickListNo"]
+            data["Station"] = datas[0]["Station"]
+            data["Kitter"] = datas[0]["Kitter"]
+            data["UniqueNo"] = datas[0]["UniqueNo"]
+        fields = ("KitNo","PickListNo","Station","Kitter","UniqueNo","ItemNo","ItemDescription","Quantity","Location","quantity_picked")
+
+        with open (csvfilename,"w") as file:
+            writer = csv.DictWriter(file, fieldnames=fields)
+            writer.writeheader()
+            for data in datas[0]["items"]:
+                writer.writerow(data)
+        return json.dumps("done")
+
 
 @app.route("/list", methods = ['GET'])
 def itemlist():
     fields = ("KitNo","PickListNo","Station","Kitter","UniqueNo","ItemNo","ItemDescription","Quantity","Location","SerialNo")
     info = {}
     items = []
-    with open (r"item2.csv","r") as file:
-        reader = csv.DictReader( file, fields)
-        for row in reader:
-            break
+    data = []
+    csvfilename = request.args.get("csvfilename") + ".csv"
+    try:
+        with open (csvfilename,"r") as file:
+            reader = csv.DictReader( file, fields)
+            for row in reader:
+                break
 
-        for row in reader:
-            info["KitNo"] = row["KitNo"]
-            info["PickListNo"] = row["PickListNo"]
-            info["Station"] = row["Station"]
-            info["Kitter"] = row["Kitter"]
-            info["UniqueNo"] = row["UniqueNo"]
+            for row in reader:
+                info["KitNo"] = row["KitNo"]
+                info["PickListNo"] = row["PickListNo"]
+                info["Station"] = row["Station"]
+                info["Kitter"] = row["Kitter"]
+                info["UniqueNo"] = row["UniqueNo"]
+                
+
+                
+
+                items.append({"number" : row["ItemNo"] ,
+                    "description" : row["ItemDescription"] ,
+                    "quantity" : row["Quantity"] ,
+                    "location" : row["Location"]})
             
-
-            
-
-            items.append({"number" : row["ItemNo"] ,
-                "description" : row["ItemDescription"] ,
-                "quantity" : row["Quantity"] ,
-                "location" : row["Location"]})
+            info["items"]= items
+        print(json.dumps([info], indent = 4))
+        return json.dumps([info], indent = 4) 
         
-        info["items"]= items
-
-        #with open("jsonFilename", 'w', encoding = 'utf-8') as jsonfile:  
-        return json.dumps(info, indent = 4)  
-            
+    except FileNotFoundError :
+        return ('' , 400)          
 
 if __name__ == '__main__':
-    app.run(debug = True )    
+    app.run(host="10.160.0.3" , debug = True )    
