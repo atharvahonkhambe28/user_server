@@ -16,51 +16,51 @@ import csv
 
 app = Flask(__name__)
 
-# db = yaml.load(open('back.yaml'))
-# app.config['MYSQL_HOST'] = db['mysql_host'] 
-# app.config['MYSQL_USER'] = db['mysql_user']
-# app.config['MYSQL_PASSWORD'] = db['mysql_password']
-# app.config['MYSQL_DB'] = db['mysql_db']
+db = yaml.load(open('back.yaml'))
+app.config['MYSQL_HOST'] = db['mysql_host'] 
+app.config['MYSQL_USER'] = db['mysql_user']
+app.config['MYSQL_PASSWORD'] = db['mysql_password']
+app.config['MYSQL_DB'] = db['mysql_db']
 
 
 
-# mysql = MySQL(app)
+mysql = MySQL(app)
 
-# @app.route('/register', methods =['POST'])
-# def index():
-#     if request.method == 'POST':
-#         userDetails = request.form
-#         Name = userDetails['Name']
-#         Surname = userDetails['Surname']
-#         Email = userDetails['Email']
-#         Password = userDetails['Password']
-#         ConfirmPassword = userDetails['ConfirmPassword']
+@app.route('/register', methods =['POST'])
+def index():
+    if request.method == 'POST':
+        userDetails = request.form
+        Name = userDetails['Name']
+        Surname = userDetails['Surname']
+        Email = userDetails['Email']
+        Password = userDetails['Password']
+        ConfirmPassword = userDetails['ConfirmPassword']
        
-#         data = request.get_json()
+        data = request.get_json()
         
-#         cur = mysql.connection.cursor()
-#         cur.execute("INSERT INTO users(Name,Surname,Email,Password,ConfirmPassword) VALUES(%s, %s, %s, %s, %s)", (Name,Surname,Email,Password,ConfirmPassword))
-#         mysql.connection.commit() 
-#         cur.close()
-#         return 'great success'
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO users(Name,Surname,Email,Password,ConfirmPassword) VALUES(%s, %s, %s, %s, %s)", (Name,Surname,Email,Password,ConfirmPassword))
+        mysql.connection.commit() 
+        cur.close()
+        return 'great success'
         
 
-# @app.route("/login", methods =['POST'])
-# def login():
-#     if request.method == 'POST':
-#         userDetails = request.form
-#         Email = userDetails['Email']
-#         Password = userDetails['Password']
-#         data = request.get_json()
+@app.route("/login", methods =['POST'])
+def login():
+    if request.method == 'POST':
+        userDetails = request.form
+        Email = userDetails['Email']
+        Password = userDetails['Password']
+        data = request.get_json()
         
-#         cur = mysql.connection.cursor()
-#         count = cur.execute('select * from users where Email=%s and Password=%s', (Email,Password)) 
-#         mysql.connection.commit() 
-#         cur.close()
-#         if count == 0:
-#             return "Okay"
-#         else:
-#             return "User exist"  
+        cur = mysql.connection.cursor()
+        count = cur.execute('select * from users where Email=%s and Password=%s', (Email,Password)) 
+        mysql.connection.commit() 
+        cur.close()
+        if count == 0:
+            return "Okay"
+        else:
+            return "User exist"  
 
 @app.route("/items_picked", methods =['POST'])
 def items_picked():
