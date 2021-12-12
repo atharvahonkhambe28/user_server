@@ -171,4 +171,4 @@ def get_layout():
     return json.dumps(data , indent = 4)
 
 if __name__ == '__main__':
-    app.run(host = '192.168.43.146' ,debug = True )    
+    app.run(host =  '10.160.0.3' ,debug = True )    
